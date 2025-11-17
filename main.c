@@ -22,17 +22,26 @@ int main(void) {
     InitWindow(frame_largura, frame_altura, "Movimento");
     SetTargetFPS(60);
 
+    int novaLinha = linha;
+    int novaColuna = coluna;
+
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(DARKGRAY);
 
+        int posX, posY;
+
         for (int i = 0; i < NUM_LINHAS; i++) {
+            posY = i * CELULA_ALTURA + MARGEM;
+
             for (int j = 0; j < NUM_COLUNAS; j++) {
+                posX = j * CELULA_LARGURA + MARGEM;
+
                 switch (mapa[i][j]) {
                     case 'p':
                         DrawRectangle(
-                            j * CELULA_LARGURA + MARGEM,
-                            i * CELULA_ALTURA + MARGEM,
+                            posX,
+                            posY,
                             CELULA_LARGURA,
                             CELULA_ALTURA,
                             DARKBROWN
@@ -40,8 +49,8 @@ int main(void) {
                         continue;
                     case 'i':
                         DrawRectangle(
-                            j * CELULA_LARGURA + MARGEM,
-                            i * CELULA_ALTURA + MARGEM,
+                            posX,
+                            posY,
                             CELULA_LARGURA,
                             CELULA_ALTURA,
                             GREEN
@@ -49,8 +58,8 @@ int main(void) {
                         continue;
                     case 'L':
                         DrawRectangle(
-                            j * CELULA_LARGURA + MARGEM,
-                            i * CELULA_ALTURA + MARGEM,
+                            posX,
+                            posY,
                             CELULA_LARGURA,
                             CELULA_ALTURA,
                             PINK
@@ -58,8 +67,8 @@ int main(void) {
                         continue;
                     default:
                         DrawRectangle(
-                            j * CELULA_LARGURA + MARGEM,
-                            i * CELULA_ALTURA + MARGEM,
+                            posX,
+                            posY,
                             CELULA_LARGURA,
                             CELULA_ALTURA,
                             RAYWHITE
@@ -68,15 +77,23 @@ int main(void) {
             }
         }
 
-        if (IsKeyDown(KEY_UP)) linha--;
-        if (IsKeyDown(KEY_DOWN)) linha++;
-        if (IsKeyDown(KEY_RIGHT)) coluna++;
-        if (IsKeyDown(KEY_LEFT)) coluna--;
+        if (IsKeyDown(KEY_UP)) novaLinha--;
+        if (IsKeyDown(KEY_DOWN)) novaLinha++;
+        if (IsKeyDown(KEY_RIGHT)) novaColuna++;
+        if (IsKeyDown(KEY_LEFT)) novaColuna--;
 
-        if (linha < 0 || linha >= NUM_LINHAS ||
-            coluna < 0 || coluna >= NUM_COLUNAS ||
-            mapa[linha][coluna] == 'p'
+        if (novaLinha >= 0 && novaLinha < NUM_LINHAS &&
+            novaColuna >= 0 && novaColuna < NUM_COLUNAS &&
+            mapa[novaLinha][novaColuna] != 'p'
         ) {
+            linha = novaLinha;
+            coluna = novaColuna;
+        } else {
+            novaLinha = linha;
+            novaColuna = coluna;
+        } 
+
+        if (mapa[novaLinha][novaColuna] == 'L') {
             break;
         } 
 
