@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "Build Raylib (GCC)",
+			"command": "/usr/bin/gcc",
+			"args": [
+				"-fdiagnostics-color=always",
+				"${file}",
+				"-I/opt/homebrew/Cellar/raylib/5.5/include",
+                "-L/opt/homebrew/Cellar/raylib/5.5/lib",
+                "-lraylib",
+                "-framework", "Cocoa",
+                "-framework", "OpenGL",
+                "-framework", "IOKit",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: /usr/bin/gcc"
+		}
+	]
+}
