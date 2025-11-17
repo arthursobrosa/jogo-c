@@ -22,26 +22,70 @@ int main(void) {
     InitWindow(frame_largura, frame_altura, "Movimento");
     SetTargetFPS(60);
 
+    Image paredeImage = LoadImage("resources/parede.jpg");
+    Texture2D paredeTexture = LoadTextureFromImage(paredeImage);
+    UnloadImage(paredeImage);
+
+    Image pistaImage = LoadImage("resources/pista.jpg");
+    Texture2D pistaTexture = LoadTextureFromImage(pistaImage);
+    UnloadImage(pistaImage);
+
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(DARKGRAY);
+        ClearBackground(WHITE);
+
+        Rectangle pistaDest = {
+            MARGEM,
+            MARGEM,
+            CELULA_LARGURA * NUM_COLUNAS,
+            CELULA_ALTURA * NUM_LINHAS
+        };
+
+        Rectangle pistaSrc = { 0, 0, pistaTexture.width, pistaTexture.height };
+
+        DrawTexturePro(
+            pistaTexture,
+            pistaSrc,
+            pistaDest,
+            (Vector2){0,0},
+            0.0f,
+            WHITE
+        );
 
         for (int i = 0; i < NUM_LINHAS; i++) {
             for (int j = 0; j < NUM_COLUNAS; j++) {
+                int posX = j * CELULA_LARGURA + MARGEM;
+                int posY = i * CELULA_ALTURA + MARGEM;
+
+                Rectangle src;
+
+                Rectangle dest = { 
+                    posX, 
+                    posY,
+                    CELULA_LARGURA,
+                    CELULA_ALTURA  
+                };
+
+                Vector2 origin = { 0, 0 };
+
                 switch (mapa[i][j]) {
                     case 'p':
-                        DrawRectangle(
-                            j * CELULA_LARGURA + MARGEM,
-                            i * CELULA_ALTURA + MARGEM,
-                            CELULA_LARGURA,
-                            CELULA_ALTURA,
-                            DARKBROWN
+                        src = (Rectangle){ 0, 0, paredeTexture.width, paredeTexture.height };
+
+                        DrawTexturePro(
+                            paredeTexture,
+                            src,
+                            dest,
+                            origin,
+                            0.0f,
+                            WHITE
                         );
+
                         continue;
                     case 'i':
                         DrawRectangle(
-                            j * CELULA_LARGURA + MARGEM,
-                            i * CELULA_ALTURA + MARGEM,
+                            posX,
+                            posY,
                             CELULA_LARGURA,
                             CELULA_ALTURA,
                             GREEN
@@ -49,21 +93,15 @@ int main(void) {
                         continue;
                     case 'L':
                         DrawRectangle(
-                            j * CELULA_LARGURA + MARGEM,
-                            i * CELULA_ALTURA + MARGEM,
+                            posX,
+                            posY,
                             CELULA_LARGURA,
                             CELULA_ALTURA,
                             PINK
                         );
                         continue;
                     default:
-                        DrawRectangle(
-                            j * CELULA_LARGURA + MARGEM,
-                            i * CELULA_ALTURA + MARGEM,
-                            CELULA_LARGURA,
-                            CELULA_ALTURA,
-                            RAYWHITE
-                        );
+                        continue;
                 }
             }
         }
@@ -90,6 +128,10 @@ int main(void) {
 
         EndDrawing();
     }
+
+    UnloadTexture(paredeTexture);
+    UnloadTexture(pistaTexture);
+    CloseWindow();
 
     return 0;
 }
