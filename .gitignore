@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+*.dSYM/
+
+# build artifacts
+*.o
+*.obj
+*.exe
+*.out
+test
+build/
+bin/
+obj/
