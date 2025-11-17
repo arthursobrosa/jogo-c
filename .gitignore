@@ -5,7 +5,6 @@
 # build artifacts
 *.o
 *.obj
-*.exe
 *.out
 main
 build/
