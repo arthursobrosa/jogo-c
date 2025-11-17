@@ -30,6 +30,9 @@ int main(void) {
     Texture2D pistaTexture = LoadTextureFromImage(pistaImage);
     UnloadImage(pistaImage);
 
+    int novaLinha = linha;
+    int novaColuna = coluna;
+
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(WHITE);
@@ -52,10 +55,13 @@ int main(void) {
             WHITE
         );
 
+        int posX, posY;
+
         for (int i = 0; i < NUM_LINHAS; i++) {
+            posY = i * CELULA_ALTURA + MARGEM;
+
             for (int j = 0; j < NUM_COLUNAS; j++) {
-                int posX = j * CELULA_LARGURA + MARGEM;
-                int posY = i * CELULA_ALTURA + MARGEM;
+                posX = j * CELULA_LARGURA + MARGEM;
 
                 Rectangle src;
 
@@ -106,17 +112,25 @@ int main(void) {
             }
         }
 
-        if (IsKeyDown(KEY_UP)) linha--;
-        if (IsKeyDown(KEY_DOWN)) linha++;
-        if (IsKeyDown(KEY_RIGHT)) coluna++;
-        if (IsKeyDown(KEY_LEFT)) coluna--;
+        if (IsKeyDown(KEY_UP)) novaLinha--;
+        if (IsKeyDown(KEY_DOWN)) novaLinha++;
+        if (IsKeyDown(KEY_RIGHT)) novaColuna++;
+        if (IsKeyDown(KEY_LEFT)) novaColuna--;
 
-        if (linha < 0 || linha >= NUM_LINHAS ||
-            coluna < 0 || coluna >= NUM_COLUNAS ||
-            mapa[linha][coluna] == 'p'
+        if (novaLinha >= 0 && novaLinha < NUM_LINHAS &&
+            novaColuna >= 0 && novaColuna < NUM_COLUNAS &&
+            mapa[novaLinha][novaColuna] != 'p'
         ) {
-            break;
+            linha = novaLinha;
+            coluna = novaColuna;
+        } else {
+            novaLinha = linha;
+            novaColuna = coluna;
         } 
+
+        if (mapa[novaLinha][novaColuna] == 'L') {
+            break;
+        }
 
         DrawRectangle(
             coluna * CELULA_LARGURA + MARGEM,
