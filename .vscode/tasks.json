@@ -7,7 +7,7 @@
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-fdiagnostics-color=always",
-				"${file}",
+				"${workspaceFolder}/*c",
 				"-I/opt/homebrew/Cellar/raylib/5.5/include",
                 "-L/opt/homebrew/Cellar/raylib/5.5/lib",
                 "-lraylib",
@@ -15,7 +15,7 @@
                 "-framework", "OpenGL",
                 "-framework", "IOKit",
 				"-o",
-				"${fileDirname}/${fileBasenameNoExtension}"
+				"${workspaceFolder}/jogo"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
