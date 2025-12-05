@@ -2,8 +2,6 @@
 #include <raylib.h>
 #include <string.h>
 #include "desenho.h"
-#include "tamanho.h"
-#include "movimento.h"
 
 int main(int argc, char *argv[]) 
 {
@@ -18,20 +16,17 @@ int main(int argc, char *argv[])
 
     float velocidade = 1;
 
+    Jogador voce;
+    Jogador inimigo;
+    configurarJogador(false, &voce, velocidade);
+    configurarJogador(true, &inimigo, velocidade);
+
     char mapa[NUM_LINHAS][NUM_COLUNAS];
-    Coordenada coordenadaJogador;
-    Coordenada coordenadaInimigo;
+    lerMapa(caminhoArquivo, mapa, &(voce.posicao), &(inimigo.posicao));
 
-    float anguloJogador = 0;
-    float anguloInimigo = 0;
-
-    lerMapa(caminhoArquivo, mapa, &coordenadaJogador, &coordenadaInimigo);
-
-    Tamanho tamanhoMapa;
-    Tamanho tamanhoRodape;
-    Tamanho tamanhoJanela;
-
-    definirTamanhos(&tamanhoMapa, &tamanhoRodape, &tamanhoJanela, NUM_LINHAS, NUM_COLUNAS, ESCALA);
+    Tamanho tamanhoMapa = {NUM_COLUNAS * ESCALA, NUM_LINHAS * ESCALA};
+    Tamanho tamanhoRodape = {tamanhoMapa.largura, tamanhoMapa.altura * 0.15};
+    Tamanho tamanhoJanela = {tamanhoMapa.largura, tamanhoMapa.altura + tamanhoRodape.altura};
 
     InitWindow((int)tamanhoJanela.largura, (int)tamanhoJanela.altura, "Janela do Jogo");
     SetTargetFPS(60);
@@ -42,28 +37,28 @@ int main(int argc, char *argv[])
         ClearBackground(WHITE);
 
         desenharMapa(mapa);
-        desenharRodape();
-        desenharJogador(&coordenadaJogador, &anguloJogador);
-        desenharInimigo(&coordenadaInimigo, &anguloInimigo);
+        desenharRodape(tamanhoRodape);
+        desenharJogador(&voce);
+        desenharJogador(&inimigo);
 
         if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) 
         {
-            mover(false, &velocidade, &anguloJogador, &(coordenadaJogador.x), &(coordenadaJogador.y));
+            mover(false, &voce);
         }
 
         if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) 
         {
-            anguloJogador--;
+            voce.angulo--;
         }
 
         if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) 
         {
-            anguloJogador++;
+            voce.angulo++;
         }
 
         if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) 
         {
-            mover(true, &velocidade, &anguloJogador, &(coordenadaJogador.x), &(coordenadaJogador.y));
+            mover(true, &voce);
         }
 
         EndDrawing();

@@ -1,6 +1,6 @@
 #include "desenho.h"
 
-void lerMapa(char *caminhoArquivo, char mapa[NUM_LINHAS][NUM_COLUNAS], Coordenada *coordenadaJogador, Coordenada *coordenadaInimigo)
+void lerMapa(char *caminhoArquivo, char mapa[NUM_LINHAS][NUM_COLUNAS], Coordenada *coordenadaVoce, Coordenada *coordenadaInimigo)
 {
     FILE *arquivo = fopen(caminhoArquivo, "r");
 
@@ -22,8 +22,8 @@ void lerMapa(char *caminhoArquivo, char mapa[NUM_LINHAS][NUM_COLUNAS], Coordenad
 
             if (c == 'j')
             {
-                coordenadaJogador->x = j * ESCALA;
-                coordenadaJogador->y = i * ESCALA;
+                coordenadaVoce->x = j * ESCALA;
+                coordenadaVoce->y = i * ESCALA;
             }
 
             if (c == 'i')
@@ -53,45 +53,30 @@ void desenharMapa(char mapa[NUM_LINHAS][NUM_COLUNAS])
     }
 }
 
-void desenharRodape()
+void desenharRodape(Tamanho tamanho)
 {
     Rectangle *celula = malloc(sizeof(Rectangle));
 
     celula->x = 0;
     celula->y = NUM_LINHAS * ESCALA;
-    celula->width = NUM_COLUNAS * ESCALA;
-    celula->height = NUM_LINHAS * ESCALA * 0.15;
+    celula->width = tamanho.largura;
+    celula->height = tamanho.altura;
 
     _desenharRetangulo(celula, 0, BLUE);
 
     free(celula);
 }
 
-void desenharJogador(Coordenada *coordenada, float *angulo)
-{
-    _desenharCarro(coordenada, *angulo, YELLOW);
-}
-
-void desenharInimigo(Coordenada *coordenada, float *angulo)
-{
-    _desenharCarro(coordenada, *angulo, RED);
-}
-
-void _desenharCarro(Coordenada *coordenada, float angulo, Color cor)
+void desenharJogador(Jogador *jogador)
 {
     Rectangle *celula = malloc(sizeof(Rectangle));
 
-    float largura = 48;
-    float altura = 16;
+    celula->x = jogador->posicao.x;
+    celula->y = jogador->posicao.y;
+    celula->width = jogador->tamanho.largura;
+    celula->height = jogador->tamanho.altura;
 
-    celula->x = coordenada->x;
-    celula->y = coordenada->y;
-    celula->width = largura;
-    celula->height = altura;
-
-    _desenharRetangulo(celula, angulo, cor);
-
-    free(celula);
+    _desenharRetangulo(celula, jogador->angulo, jogador->cor);
 }
 
 void _desenharCelulaMapa(Coordenada *origemMapa, char *c)
