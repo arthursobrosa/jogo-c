@@ -3,6 +3,7 @@
 #include <string.h>
 #include "desenho.h"
 #include "tamanho.h"
+#include "movimento.h"
 
 int main(int argc, char *argv[]) 
 {
@@ -15,11 +16,16 @@ int main(int argc, char *argv[])
     char caminhoArquivo[20];
     strcpy(caminhoArquivo, argv[1]);
 
-    char mapa[NUM_LINHAS][NUM_COLUNAS];
-    Coordenada origemJogador;
-    Coordenada origemInimigo;
+    float velocidade = 1;
 
-    lerMapa(caminhoArquivo, mapa, &origemJogador, &origemInimigo);
+    char mapa[NUM_LINHAS][NUM_COLUNAS];
+    Coordenada coordenadaJogador;
+    Coordenada coordenadaInimigo;
+
+    float anguloJogador = 0;
+    float anguloInimigo = 0;
+
+    lerMapa(caminhoArquivo, mapa, &coordenadaJogador, &coordenadaInimigo);
 
     Tamanho tamanhoMapa;
     Tamanho tamanhoRodape;
@@ -37,27 +43,27 @@ int main(int argc, char *argv[])
 
         desenharMapa(mapa);
         desenharRodape();
-        desenharJogador(&origemJogador);
-        desenharInimigo(&origemInimigo);
+        desenharJogador(&coordenadaJogador, &anguloJogador);
+        desenharInimigo(&coordenadaInimigo, &anguloInimigo);
 
         if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) 
         {
-
+            mover(false, &velocidade, &anguloJogador, &(coordenadaJogador.x), &(coordenadaJogador.y));
         }
 
         if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) 
         {
-            
+            anguloJogador--;
         }
 
         if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) 
         {
-            
+            anguloJogador++;
         }
 
         if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) 
         {
-            
+            mover(true, &velocidade, &anguloJogador, &(coordenadaJogador.x), &(coordenadaJogador.y));
         }
 
         EndDrawing();

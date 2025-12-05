@@ -1,8 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "desenho.h"
 
-void lerMapa(char *caminhoArquivo, char mapa[NUM_LINHAS][NUM_COLUNAS], Coordenada *origemJogador, Coordenada *origemInimigo)
+void lerMapa(char *caminhoArquivo, char mapa[NUM_LINHAS][NUM_COLUNAS], Coordenada *coordenadaJogador, Coordenada *coordenadaInimigo)
 {
     FILE *arquivo = fopen(caminhoArquivo, "r");
 
@@ -22,16 +20,16 @@ void lerMapa(char *caminhoArquivo, char mapa[NUM_LINHAS][NUM_COLUNAS], Coordenad
         {
             char c = linha[j];
 
-            if (c == 'i')
-            {
-                origemJogador->x = j * ESCALA;
-                origemJogador->y = i * ESCALA;
-            }
-
             if (c == 'j')
             {
-                origemInimigo->x = j * ESCALA;
-                origemInimigo->y = i * ESCALA;
+                coordenadaJogador->x = j * ESCALA;
+                coordenadaJogador->y = i * ESCALA;
+            }
+
+            if (c == 'i')
+            {
+                coordenadaInimigo->x = j * ESCALA;
+                coordenadaInimigo->y = i * ESCALA;
             }
 
             mapa[i][j] = c;
@@ -64,34 +62,34 @@ void desenharRodape()
     celula->width = NUM_COLUNAS * ESCALA;
     celula->height = NUM_LINHAS * ESCALA * 0.15;
 
-    _desenharRetangulo(celula, BLUE);
+    _desenharRetangulo(celula, 0, BLUE);
 
     free(celula);
 }
 
-void desenharJogador(Coordenada *origem)
+void desenharJogador(Coordenada *coordenada, float *angulo)
 {
-    _desenharCarro(origem, YELLOW);
+    _desenharCarro(coordenada, *angulo, YELLOW);
 }
 
-void desenharInimigo(Coordenada *origem)
+void desenharInimigo(Coordenada *coordenada, float *angulo)
 {
-    _desenharCarro(origem, RED);
+    _desenharCarro(coordenada, *angulo, RED);
 }
 
-void _desenharCarro(Coordenada *origem, Color cor)
+void _desenharCarro(Coordenada *coordenada, float angulo, Color cor)
 {
     Rectangle *celula = malloc(sizeof(Rectangle));
 
     float largura = 48;
     float altura = 16;
 
-    celula->x = origem->x;
-    celula->y = origem->y;
+    celula->x = coordenada->x;
+    celula->y = coordenada->y;
     celula->width = largura;
     celula->height = altura;
 
-    _desenharRetangulo(celula, cor);
+    _desenharRetangulo(celula, angulo, cor);
 
     free(celula);
 }
@@ -119,22 +117,29 @@ void _desenharCelulaMapa(Coordenada *origemMapa, char *c)
             cor = WHITE;
     }
 
-    _desenharRetangulo(celula, cor);
+    _desenharRetangulo(celula, 0, cor);
 
     free(celula);
 }
 
-void _desenharRetangulo(Rectangle *celula, Color cor)
+void _desenharRetangulo(Rectangle *celula, float angulo, Color cor)
 {
     // DrawRectangleRec(*celula, cor);
     // DrawRectangleLinesEx(*celula, 0.5, BLACK);
 
-    DrawRectangle
-    (
-        celula->x,
-        celula->y,
-        celula->width,
-        celula->height,
+    // DrawRectangle
+    // (
+    //     celula->x,
+    //     celula->y,
+    //     celula->width,
+    //     celula->height,
+    //     cor
+    // );
+
+    DrawRectanglePro(
+        *celula,
+        (Vector2){0, 0},
+        angulo,
         cor
     );
 }
