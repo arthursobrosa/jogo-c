@@ -1,7 +1,5 @@
-#include <stdio.h>
-#include <raylib.h>
 #include <string.h>
-#include "desenho.h"
+#include "janela.h"
 
 int main(int argc, char *argv[]) 
 {
@@ -13,22 +11,35 @@ int main(int argc, char *argv[])
 
     char caminhoArquivo[20];
     strcpy(caminhoArquivo, argv[1]);
-
-    float velocidade = 1;
+    char mapa[NUM_LINHAS][NUM_COLUNAS];
 
     Jogador voce;
     Jogador inimigo;
-    configurarJogador(false, &voce, velocidade);
-    configurarJogador(true, &inimigo, velocidade);
 
-    char mapa[NUM_LINHAS][NUM_COLUNAS];
-    lerMapa(caminhoArquivo, mapa, &(voce.posicao), &(inimigo.posicao));
+    lerMapa(
+        caminhoArquivo,
+        mapa,
+        &voce,
+        &inimigo
+    );
 
-    Tamanho tamanhoMapa = {NUM_COLUNAS * ESCALA, NUM_LINHAS * ESCALA};
-    Tamanho tamanhoRodape = {tamanhoMapa.largura, tamanhoMapa.altura * 0.15};
-    Tamanho tamanhoJanela = {tamanhoMapa.largura, tamanhoMapa.altura + tamanhoRodape.altura};
+    configurarJogadores(&voce, &inimigo);
 
-    InitWindow((int)tamanhoJanela.largura, (int)tamanhoJanela.altura, "Janela do Jogo");
+    float larguraMapa = NUM_COLUNAS;
+    float alturaMapa = NUM_LINHAS;
+
+    float larguraRodape = larguraMapa;
+    float alturaRodape = alturaMapa * 0.15;
+
+    float larguraJanela = larguraMapa;
+    float alturaJanela = alturaMapa + alturaRodape;
+
+    InitWindow(
+        larguraJanela * ESCALA, 
+        alturaJanela * ESCALA, 
+        "Janela do Jogo"
+    );
+
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) 
@@ -37,29 +48,11 @@ int main(int argc, char *argv[])
         ClearBackground(WHITE);
 
         desenharMapa(mapa);
-        desenharRodape(tamanhoRodape);
+        desenharRodape(larguraRodape, alturaRodape);
         desenharJogador(&voce);
         desenharJogador(&inimigo);
 
-        if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) 
-        {
-            mover(false, &voce);
-        }
-
-        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) 
-        {
-            voce.angulo--;
-        }
-
-        if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) 
-        {
-            voce.angulo++;
-        }
-
-        if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) 
-        {
-            mover(true, &voce);
-        }
+        lidarComTecla(&voce);
 
         EndDrawing();
     }

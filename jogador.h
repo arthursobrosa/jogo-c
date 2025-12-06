@@ -1,16 +1,22 @@
-#include <raylib.h>
 #include <stdbool.h>
 #include <math.h>
-#include "helper.h"
+#include "celula.h"
+
+#define VELOCIDADE_MAXIMA 1.0
+#define ACELERACAO 0.01
 
 typedef struct 
 {
-    Coordenada posicao;
-    Tamanho tamanho;
+    Celula celula;
     float velocidade;
-    float angulo;
-    Color cor;
+    float aceleracao;
 } Jogador;
 
-void configurarJogador(bool ehInimigo, Jogador *jogador, float velocidade);
-void mover(bool ehPositivo, Jogador *jogador);
+void configurarJogadores(Jogador *voce, Jogador *inimigo);
+void desenharJogador(Jogador *jogador);
+void lidarComTecla(Jogador *jogador);
+void _acelerar(Jogador *jogador, bool praFrente);
+void _avancar(Jogador *jogador);
+void _voltar(Jogador *jogador);
+void _frear(Jogador *jogador);
+void _mover(Jogador *jogador);
