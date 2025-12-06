@@ -9,6 +9,7 @@ typedef struct
 {
     Celula celula;
     float velocidade;
+    float velocidadeFutura;
     float aceleracao;
 } Jogador;
 
@@ -20,3 +21,4 @@ void _avancar(Jogador *jogador);
 void _voltar(Jogador *jogador);
 void _frear(Jogador *jogador);
 void _mover(Jogador *jogador);
+void atualizarJogador(Jogador *jogador);

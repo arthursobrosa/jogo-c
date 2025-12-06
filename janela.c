@@ -28,13 +28,17 @@ void lerMapa(
             if (c == 'j')
             {
                 voce->celula.retangulo.x = coluna;
+                voce->celula.posicaoFutura.x = coluna;
                 voce->celula.retangulo.y = linha;
+                voce->celula.posicaoFutura.y = linha;
             }
 
             if (c == 'i')
             {
                 inimigo->celula.retangulo.x = coluna;
+                inimigo->celula.posicaoFutura.x = coluna;
                 inimigo->celula.retangulo.y = linha;
+                inimigo->celula.posicaoFutura.y = linha;
             }
 
             mapa[linha][coluna] = c;
@@ -78,6 +82,7 @@ void _desenharCelulaMapa(int linha, int coluna, char c)
     }
 
     celula.cor = cor;
+    celula.ancoraRotacao = (Vector2){0,0};
     celula.angulo = 0;
 
     desenharCelula(celula);
@@ -90,6 +95,7 @@ void desenharRodape(float largura, float altura)
     celula.retangulo.y = (float)NUM_LINHAS;
     celula.retangulo.width = largura;
     celula.retangulo.height = altura;
+    celula.ancoraRotacao = (Vector2){0,0};
     celula.angulo = 0;
     celula.cor = YELLOW;
 
@@ -97,7 +103,7 @@ void desenharRodape(float largura, float altura)
 }
 
 bool temParede(char mapa[NUM_LINHAS][NUM_COLUNAS], Jogador *jogador) {
-    int linha = (int)(jogador->celula.retangulo.y);
-    int coluna = (int)(jogador->celula.retangulo.x);
+    int linha = (int)(jogador->celula.posicaoFutura.y);
+    int coluna = (int)(jogador->celula.posicaoFutura.x);
     return mapa[linha][coluna] == 'p';
 }

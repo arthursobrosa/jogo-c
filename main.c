@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
     strcpy(caminhoArquivo, argv[1]);
     char mapa[NUM_LINHAS][NUM_COLUNAS];
 
-    Jogador voce;
-    Jogador inimigo;
+    Jogador voce = {0};
+    Jogador inimigo = {0};
 
     lerMapa(
         caminhoArquivo,
@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
         desenharJogador(&inimigo);
 
         lidarComTecla(&voce);
+        atualizarJogador(&voce);
 
         EndDrawing();
     }
