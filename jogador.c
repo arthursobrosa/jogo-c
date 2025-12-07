@@ -40,24 +40,28 @@ void lidarComTecla(Jogador *jogador)
 
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
     {
-        jogador->celula.anguloFuturo -= 3;
+        jogador->celula.anguloFuturo -= 120.0 * GetFrameTime();
     }
     else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
     {
-        jogador->celula.anguloFuturo += 3;
+        jogador->celula.anguloFuturo += 120.0 * GetFrameTime();
     }
 }
 
 void _acelerar(Jogador *jogador, bool praFrente)
 {
-    if (fabsf(jogador->velocidade) <= VELOCIDADE_MAXIMA)
+    float deltaTempo = GetFrameTime();
+    float aceleracaoReal = ACELERACAO * deltaTempo;
+    float moduloVelocidade = fabsf(jogador->velocidade);
+
+    if (moduloVelocidade < VELOCIDADE_MAXIMA && (moduloVelocidade + aceleracaoReal) <= VELOCIDADE_MAXIMA)
     {
         if (praFrente)
         {
-            jogador->velocidadeFutura += ACELERACAO;
+            jogador->velocidadeFutura += aceleracaoReal;
         }
         else {
-            jogador->velocidadeFutura -= ACELERACAO;
+            jogador->velocidadeFutura -= aceleracaoReal;
         }
     }
 }
@@ -76,25 +80,32 @@ void _voltar(Jogador *jogador)
 
 void _frear(Jogador *jogador)
 {
-    if (fabsf(jogador->velocidade) < 0.0001f) return;
+    float deltaTempo = GetFrameTime();
+    float frenagem = ACELERACAO * deltaTempo;
 
-    bool aceleracaoEhPositiva = jogador->velocidade > 0;
+    if (jogador->velocidade > 0)
+    {
+        jogador->velocidadeFutura -= frenagem;
+        if (jogador->velocidadeFutura < 0)
+            jogador->velocidadeFutura = 0;
+    }
+    else if (jogador->velocidade < 0)
+    {
+        jogador->velocidadeFutura += frenagem;
+        if (jogador->velocidadeFutura > 0)
+            jogador->velocidadeFutura = 0;
+    }
 
-    if (aceleracaoEhPositiva)
-    {
-        _voltar(jogador);
-    }
-    else 
-    {
-        _avancar(jogador);
-    }
+    _mover(jogador);
 }
 
 void _mover(Jogador *jogador)
 {
     float anguloRad = jogador->celula.anguloFuturo * (M_PI / 180);
-    float deslocamentoX = jogador->velocidadeFutura * cos(anguloRad);
-    float deslocamentoY = jogador->velocidadeFutura * sin(anguloRad);
+    float deltaTempo = GetFrameTime();
+    float deslocamento = jogador->velocidadeFutura * deltaTempo;
+    float deslocamentoX = deslocamento * cos(anguloRad);
+    float deslocamentoY = deslocamento * sin(anguloRad);
 
     float novoX = (jogador->celula.retangulo.x) + deslocamentoX;
     float novoY = (jogador->celula.retangulo.y) + deslocamentoY;
@@ -109,4 +120,13 @@ void atualizarJogador(Jogador *jogador)
     jogador->celula.retangulo.y = jogador->celula.posicaoFutura.y;
     jogador->celula.angulo = jogador->celula.anguloFuturo;
     jogador->velocidade = jogador->velocidadeFutura;
+}
+
+void resetarJogador(Jogador *jogador)
+{
+    jogador->celula.posicaoFutura.x = jogador->celula.retangulo.x;
+    jogador->celula.posicaoFutura.y = jogador->celula.retangulo.y;
+    jogador->celula.anguloFuturo = jogador->celula.angulo;
+    jogador->velocidade *= 0.5;
+    jogador->velocidadeFutura = jogador->velocidade;
 }

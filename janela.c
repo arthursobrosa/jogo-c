@@ -128,16 +128,23 @@ void _obterCantosRetanguloRotacionado
 (
     Rectangle retangulo,
     float rotacao,
+    Vector2 anchor,
     Vector2 saida[4]
 )
 {
     float metadeLargura = retangulo.width / 2;
     float metadeAltura = retangulo.height / 2;
 
-    Vector2 topoEsquerda = {-metadeLargura, -metadeAltura};
-    Vector2 topoDireita = {metadeLargura, -metadeAltura};
-    Vector2 baseDireita = {metadeLargura, metadeAltura};
-    Vector2 baseEsquerda = {-metadeLargura, metadeAltura};
+    float centroX = retangulo.x + metadeLargura;
+    float centroY = retangulo.y + metadeAltura;
+
+    float offsetX = (anchor.x - 0.5f) * retangulo.width;
+    float offsetY = (anchor.y - 0.5f) * retangulo.height;
+
+    Vector2 topoEsquerda = {-metadeLargura - offsetX, -metadeAltura - offsetY};
+    Vector2 topoDireita  = { metadeLargura - offsetX, -metadeAltura - offsetY};
+    Vector2 baseDireita  = { metadeLargura - offsetX,  metadeAltura - offsetY};
+    Vector2 baseEsquerda = {-metadeLargura - offsetX,  metadeAltura - offsetY};
 
     // relativos ao centro do retangulo
     Vector2 cantosLocais[4] = 
@@ -151,9 +158,6 @@ void _obterCantosRetanguloRotacionado
     float rotacaoRadianos = rotacao * (M_PI / 180);
     float seno = sin(rotacaoRadianos);
     float cosseno = cos(rotacaoRadianos);
-
-    float centroX = retangulo.x + metadeLargura;
-    float centroY = retangulo.y + metadeAltura;
 
     for (int i = 0; i < 4; i++)
     {
@@ -281,21 +285,22 @@ bool _ehParede(Celula celula)
     return (corCelula.r == corMarrom.r && corCelula.g == corMarrom.g && corCelula.b == corMarrom.b && corCelula.a == corMarrom.a);
 }
 
-bool temParedeRotacinado(
+bool temParede(
     Celula mapaCel[NUM_LINHAS][NUM_COLUNAS],
     Jogador *jogador
 )
 {
     Vector2 cantosJogador[4];
     Rectangle jogadorRetangulo = jogador->celula.retangulo;
+    jogadorRetangulo.x = jogador->celula.posicaoFutura.x;
+    jogadorRetangulo.y = jogador->celula.posicaoFutura.y;
 
-    Vector2 origem = (Vector2)
-    {
-        jogadorRetangulo.x + jogadorRetangulo.width / 2,
-        jogadorRetangulo.y + jogadorRetangulo.height / 2
-    };
-
-    _obterCantosRetanguloRotacionado(jogadorRetangulo, jogador->celula.anguloFuturo, cantosJogador);
+    _obterCantosRetanguloRotacionado(
+        jogadorRetangulo, 
+        jogador->celula.anguloFuturo, 
+        jogador->celula.ancoraRotacao, 
+        cantosJogador
+    );
 
     Rectangle aabbJogador;
     _obterAABBdosCantos(cantosJogador, &aabbJogador);

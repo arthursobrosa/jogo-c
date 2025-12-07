@@ -45,6 +45,17 @@ int main(int argc, char *argv[])
 
     while (!WindowShouldClose()) 
     {
+        lidarComTecla(&voce);
+
+        if (!temParede(mapaCel, &voce))
+        {
+            atualizarJogador(&voce);
+        }
+        else
+        {
+            resetarJogador(&voce);
+        }
+
         BeginDrawing();
         ClearBackground(WHITE);
 
@@ -52,19 +63,6 @@ int main(int argc, char *argv[])
         desenharRodape(larguraRodape, alturaRodape);
         desenharJogador(&voce);
         desenharJogador(&inimigo);
-
-        lidarComTecla(&voce);
-        atualizarJogador(&voce);
-
-        if (!temParedeRotacinado(mapaCel, &voce))
-        {
-            printf("nao tem parede\n");
-            
-        }
-        else
-        {
-            printf("tem parede\n");
-        }
 
         EndDrawing();
     }

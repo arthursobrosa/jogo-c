@@ -2,15 +2,14 @@
 #include <math.h>
 #include "celula.h"
 
-#define VELOCIDADE_MAXIMA 1.0
-#define ACELERACAO 0.01
+#define VELOCIDADE_MAXIMA 50.0
+#define ACELERACAO 20.0
 
 typedef struct 
 {
     Celula celula;
     float velocidade;
     float velocidadeFutura;
-    float aceleracao;
 } Jogador;
 
 void configurarJogadores(Jogador *voce, Jogador *inimigo);
@@ -22,3 +21,4 @@ void _voltar(Jogador *jogador);
 void _frear(Jogador *jogador);
 void _mover(Jogador *jogador);
 void atualizarJogador(Jogador *jogador);
+void resetarJogador(Jogador *jogador);

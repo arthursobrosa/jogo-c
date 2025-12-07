@@ -34,6 +34,7 @@ void _obterCantosRetanguloRotacionado
 (
     Rectangle retangulo,
     float rotacao,
+    Vector2 anchor,
     Vector2 saida[4]
 );
 
@@ -62,7 +63,7 @@ bool _intervalosSeSobrepoem
 bool _satRetRet(const Vector2 a[4], const Vector2 b[4]);
 bool _ehParede(Celula celula);
 
-bool temParedeRotacinado(
+bool temParede(
     Celula mapaCel[NUM_LINHAS][NUM_COLUNAS],
     Jogador *jogador
 );

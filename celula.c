@@ -14,8 +14,8 @@ void desenharCelula(Celula celula)
 
     Vector2 eixoRotacao = 
     {
-        largura * celula.ancoraRotacao.x,
-        altura * celula.ancoraRotacao.y
+        largura * ancoraRotacaoReal.x,
+        altura * ancoraRotacaoReal.y
     };
 
     float x = (celula.retangulo.x * ESCALA) + eixoRotacao.x;
