@@ -11,14 +11,15 @@ int main(int argc, char *argv[])
 
     char caminhoArquivo[20];
     strcpy(caminhoArquivo, argv[1]);
-    char mapa[NUM_LINHAS][NUM_COLUNAS];
+    char mapaChar[NUM_LINHAS][NUM_COLUNAS];
+    Celula mapaCel[NUM_LINHAS][NUM_COLUNAS];
 
     Jogador voce = {0};
     Jogador inimigo = {0};
 
     lerMapa(
         caminhoArquivo,
-        mapa,
+        mapaChar,
         &voce,
         &inimigo
     );
@@ -47,13 +48,23 @@ int main(int argc, char *argv[])
         BeginDrawing();
         ClearBackground(WHITE);
 
-        desenharMapa(mapa);
+        desenharMapa(mapaChar, mapaCel);
         desenharRodape(larguraRodape, alturaRodape);
         desenharJogador(&voce);
         desenharJogador(&inimigo);
 
         lidarComTecla(&voce);
         atualizarJogador(&voce);
+
+        if (!temParedeRotacinado(mapaCel, &voce))
+        {
+            printf("nao tem parede\n");
+            
+        }
+        else
+        {
+            printf("tem parede\n");
+        }
 
         EndDrawing();
     }
