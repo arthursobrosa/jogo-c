@@ -42,11 +42,11 @@ void lidarComTecla(Jogador *jogador)
 
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
     {
-        jogador->celula.anguloFuturo -= 120.0 * GetFrameTime();
+        _girar(jogador, false);
     }
     else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
     {
-        jogador->celula.anguloFuturo += 120.0 * GetFrameTime();
+        _girar(jogador, true);
     }
 }
 
@@ -123,6 +123,19 @@ void _frear(Jogador *jogador)
     _mover(jogador);
 }
 
+void _girar(Jogador *jogador, bool sentidoHorario)
+{
+    float rotacao = 120.0f * GetFrameTime();
+    if (!sentidoHorario) rotacao = -rotacao;
+
+    float novoAngulo = jogador->celula.anguloFuturo + rotacao;
+
+    novoAngulo = fmod(novoAngulo, 360.0f);
+    if (novoAngulo < 0) novoAngulo += 360.0f;
+
+    jogador->celula.anguloFuturo = novoAngulo;
+}
+
 void _mover(Jogador *jogador)
 {
     float deltaTempo = GetFrameTime();
@@ -144,10 +157,30 @@ void atualizarJogador(Jogador *jogador)
 
 void resetarJogador(Jogador *jogador)
 {
+    Vector2 velocidade = jogador->velocidadeFutura;
+    Vector2 normal = {0,0};
+
+    if (fabs(velocidade.x) > fabs(velocidade.y)) {
+        normal.x = (velocidade.x > 0) ? -1 : 1;
+        normal.y = 0;
+    } else {
+        normal.x = 0;
+        normal.y = (velocidade.y > 0) ? -1 : 1;
+    }
+
+    float produtoEscalar = velocidade.x * normal.x + velocidade.y * normal.y;
+    Vector2 refletida;
+    refletida.x = velocidade.x - 2 * produtoEscalar * normal.x;
+    refletida.y = velocidade.y - 2 * produtoEscalar * normal.y;
+
+    refletida.x *= 0.2f;
+    refletida.y *= 0.2f;
+
+    jogador->velocidade = refletida;
+    jogador->velocidadeFutura = refletida;
+
     jogador->celula.posicaoFutura.x = jogador->celula.retangulo.x;
     jogador->celula.posicaoFutura.y = jogador->celula.retangulo.y;
+
     jogador->celula.anguloFuturo = jogador->celula.angulo;
-    jogador->velocidade.x *= 0.5;
-    jogador->velocidade.y *= 0.5;
-    jogador->velocidadeFutura = jogador->velocidade;
 }

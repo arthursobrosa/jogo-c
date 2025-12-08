@@ -119,11 +119,6 @@ void desenharRodape(float largura, float altura)
     desenharCelula(celula);
 }
 
-float _produtoEscalar(const Vector2 a, const Vector2 b)
-{
-    return a.x * b.x + a.y * b.y;
-}
-
 void _obterCantosRetanguloRotacionado
 (
     Rectangle retangulo,
@@ -201,13 +196,13 @@ void _projetarPoligono
     float *limiteMaximo
 )
 {
-    float produtoEscalar = _produtoEscalar(cantos[0], eixo);
+    float produtoEscalar = cantos[0].x * eixo.x + cantos[0].y * eixo.y;
     float min = produtoEscalar;
     float max = produtoEscalar;
 
     for (int i = 0; i < 4; i++)
     {
-        produtoEscalar = _produtoEscalar(cantos[i], eixo);
+        produtoEscalar = cantos[i].x * eixo.x + cantos[i].y * eixo.y;
 
         if (produtoEscalar < min) min = produtoEscalar;
         if (produtoEscalar > max) max = produtoEscalar;

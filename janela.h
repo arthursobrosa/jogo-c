@@ -28,8 +28,6 @@ void _desenharCelulaMapa
 
 void desenharRodape(float largura, float altura);
 
-float _produtoEscalar(const Vector2 a, const Vector2 b);
-
 void _obterCantosRetanguloRotacionado
 (
     Rectangle retangulo,

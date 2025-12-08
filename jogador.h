@@ -21,6 +21,7 @@ void _acelerar(Jogador *jogador, bool praFrente);
 void _avancar(Jogador *jogador);
 void _voltar(Jogador *jogador);
 void _frear(Jogador *jogador);
+void _girar(Jogador *jogador, bool sentidoHorario);
 void _mover(Jogador *jogador);
 void atualizarJogador(Jogador *jogador);
 void resetarJogador(Jogador *jogador);
