@@ -9,13 +9,15 @@ void configurarJogadores(Jogador *voce, Jogador *inimigo)
     voce->celula.retangulo.height = altura;
     voce->celula.ancoraRotacao = (Vector2){0.5, 0.5};
     voce->celula.cor = BLUE;
-    voce->velocidade = 0;
+    voce->velocidade = (Vector2){0};
+    voce->velocidadeFutura = (Vector2){0};
 
     inimigo->celula.retangulo.width = largura;
     inimigo->celula.retangulo.height = altura;
     inimigo->celula.ancoraRotacao = (Vector2){0.5, 0.5};
     inimigo->celula.cor = RED;
-    inimigo->velocidade = 0;
+    inimigo->velocidade = (Vector2){0};
+    inimigo->velocidadeFutura = (Vector2){0};
 }
 
 void desenharJogador(Jogador *jogador)
@@ -48,21 +50,43 @@ void lidarComTecla(Jogador *jogador)
     }
 }
 
+float _modulo(Vector2 vetor)
+{
+    return sqrt(pow(vetor.x, 2) + pow(vetor.y, 2));
+}
+
+Vector2 _normalizar(Vector2 vetor)
+{
+    float modulo = _modulo(vetor);
+
+    if (modulo == 0)
+    {
+        return (Vector2){0};
+    }
+
+    return (Vector2){vetor.x / modulo, vetor.y / modulo};
+}
+
 void _acelerar(Jogador *jogador, bool praFrente)
 {
     float deltaTempo = GetFrameTime();
-    float aceleracaoReal = ACELERACAO * deltaTempo;
-    float moduloVelocidade = fabsf(jogador->velocidade);
 
-    if (moduloVelocidade < VELOCIDADE_MAXIMA && (moduloVelocidade + aceleracaoReal) <= VELOCIDADE_MAXIMA)
+    float angulo = jogador->celula.anguloFuturo * (M_PI / 180.0);
+    Vector2 direcao = {cos(angulo), sin(angulo)};
+
+    float aceleracaoReal = ACELERACAO * deltaTempo;
+    if (!praFrente) aceleracaoReal *= -1;
+
+    jogador->velocidadeFutura.x += direcao.x * aceleracaoReal;
+    jogador->velocidadeFutura.y += direcao.y * aceleracaoReal;
+
+    float velocidadeAtual = _modulo(jogador->velocidadeFutura);
+
+    if (velocidadeAtual > VELOCIDADE_MAXIMA)
     {
-        if (praFrente)
-        {
-            jogador->velocidadeFutura += aceleracaoReal;
-        }
-        else {
-            jogador->velocidadeFutura -= aceleracaoReal;
-        }
+        Vector2 normalizado = _normalizar(jogador->velocidadeFutura);
+        jogador->velocidadeFutura.x = normalizado.x * VELOCIDADE_MAXIMA;
+        jogador->velocidadeFutura.y = normalizado.y * VELOCIDADE_MAXIMA;
     }
 }
 
@@ -83,17 +107,17 @@ void _frear(Jogador *jogador)
     float deltaTempo = GetFrameTime();
     float frenagem = ACELERACAO * deltaTempo;
 
-    if (jogador->velocidade > 0)
+    float moduloVelocidade = _modulo(jogador->velocidade);
+
+    if (moduloVelocidade > 0)
     {
-        jogador->velocidadeFutura -= frenagem;
-        if (jogador->velocidadeFutura < 0)
-            jogador->velocidadeFutura = 0;
-    }
-    else if (jogador->velocidade < 0)
-    {
-        jogador->velocidadeFutura += frenagem;
-        if (jogador->velocidadeFutura > 0)
-            jogador->velocidadeFutura = 0;
+        float novoModuloVelocidade = moduloVelocidade - frenagem;
+        if (novoModuloVelocidade < 0) novoModuloVelocidade = 0;
+
+        float fator = (moduloVelocidade == 0) ? 0 : (novoModuloVelocidade / moduloVelocidade);
+
+        jogador->velocidadeFutura.x = jogador->velocidade.x * fator;
+        jogador->velocidadeFutura.y = jogador->velocidade.y * fator;
     }
 
     _mover(jogador);
@@ -101,17 +125,13 @@ void _frear(Jogador *jogador)
 
 void _mover(Jogador *jogador)
 {
-    float anguloRad = jogador->celula.anguloFuturo * (M_PI / 180);
     float deltaTempo = GetFrameTime();
-    float deslocamento = jogador->velocidadeFutura * deltaTempo;
-    float deslocamentoX = deslocamento * cos(anguloRad);
-    float deslocamentoY = deslocamento * sin(anguloRad);
 
-    float novoX = (jogador->celula.retangulo.x) + deslocamentoX;
-    float novoY = (jogador->celula.retangulo.y) + deslocamentoY;
-    Vector2 coordenada = {novoX, novoY};
+    jogador->celula.posicaoFutura.x =
+        jogador->celula.retangulo.x + jogador->velocidadeFutura.x * deltaTempo;
 
-    jogador->celula.posicaoFutura = coordenada;
+    jogador->celula.posicaoFutura.y =
+        jogador->celula.retangulo.y + jogador->velocidadeFutura.y * deltaTempo;
 }
 
 void atualizarJogador(Jogador *jogador)
@@ -127,6 +147,7 @@ void resetarJogador(Jogador *jogador)
     jogador->celula.posicaoFutura.x = jogador->celula.retangulo.x;
     jogador->celula.posicaoFutura.y = jogador->celula.retangulo.y;
     jogador->celula.anguloFuturo = jogador->celula.angulo;
-    jogador->velocidade *= 0.5;
+    jogador->velocidade.x *= 0.5;
+    jogador->velocidade.y *= 0.5;
     jogador->velocidadeFutura = jogador->velocidade;
 }
