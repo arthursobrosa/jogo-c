@@ -2,7 +2,7 @@
 
 void configurarJogadores(Jogador *voce, Jogador *inimigo)
 {
-    float largura = 3;
+    float largura = 2.5;
     float altura = 1;
 
     voce->celula.retangulo.width = largura;
