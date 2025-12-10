@@ -10,6 +10,7 @@ typedef struct
     Celula celula;
     Vector2 velocidade;
     Vector2 velocidadeFutura;
+    int voltas;
     //caixa
     int vida;
     int inventario;
