@@ -5,11 +5,17 @@
 #define VELOCIDADE_MAXIMA 50.0
 #define ACELERACAO 20.0
 
-typedef struct 
+typedef struct
 {
     Celula celula;
     Vector2 velocidade;
     Vector2 velocidadeFutura;
+    //caixa
+    int vida;
+    int inventario;
+    bool escudoAtivo;
+    float tempoEscudo;
+    float tempoVelocidade;
 } Jogador;
 
 void configurarJogadores(Jogador *voce, Jogador *inimigo);
@@ -25,3 +31,4 @@ void _girar(Jogador *jogador, bool sentidoHorario);
 void _mover(Jogador *jogador);
 void atualizarJogador(Jogador *jogador);
 void resetarJogador(Jogador *jogador);
+void vida(Jogador *voce, Jogador *inimigo);
