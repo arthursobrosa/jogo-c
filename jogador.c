@@ -35,7 +35,7 @@ void lidarComTecla(Jogador *jogador)
     {
         _voltar(jogador);
     }
-    else 
+    else
     {
         _frear(jogador);
     }
@@ -184,3 +184,7 @@ void resetarJogador(Jogador *jogador)
 
     jogador->celula.anguloFuturo = jogador->celula.angulo;
 }
+/*int vida(Jogador *voce, Jogador *inimigo) {
+    voce->vida=100;
+    inimigo->vida=100;
+}*/

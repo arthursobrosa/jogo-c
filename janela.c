@@ -1,16 +1,79 @@
+// por favor comentar o que faz a movimentalcao e a colisao para que ue possa modificar na cunf caixas
 #include "janela.h"
 
-void lerMapa
-(
-    char *caminhoArquivo, 
-    char mapaChar[NUM_LINHAS][NUM_COLUNAS], 
-    Jogador *voce, 
-    Jogador *inimigo
-)
+
+void exibirMenu(EstadoJogo *estado, char *caminhoArquivo, char mapaChar[NUM_LINHAS][NUM_COLUNAS], Jogador *voce, Jogador *inimigo){
+    BeginDrawing();
+    ClearBackground(DARKGRAY);
+
+    DrawText("Menu Principal",  100,50,40,WHITE);
+    DrawText("(N) Novo Jogo", 100,100,20,WHITE);
+    DrawText("(C) Carregar Jogo",  100,150,20,WHITE);
+    DrawText("(S) Salvar Jogo",  100,200,20,WHITE);
+    DrawText("(Q) Sair",  100,250,20,WHITE);
+    DrawText("(V) Voltar ao Jogo",  100,300,20,WHITE);
+    DrawText("(Tab) Pausar",  100,350,20,WHITE);
+
+    EndDrawing();
+    //Reinicia tudo
+    if (IsKeyPressed(KEY_N)){
+        estado->menuAtivo = false;
+        lerMapa(caminhoArquivo, mapaChar, voce, inimigo);
+        estado->voce.vida=100;
+        estado->inimigo.vida=100;
+        estado->voce.voltas=0;
+        estado->inimigo.voltas=0;
+        //estado->caixa.item=ITEM_NULO
+        estado->venceu = false;
+        estado->perdeu = false;
+    }
+    //carrega o njogo
+    if (IsKeyPressed(KEY_C)){
+        carregarJogo(estado);
+        estado->menuAtivo = false;
+    }
+    //salva o jogo
+    if (IsKeyPressed(KEY_S)){
+        salvarJogo(estado);
+        estado->menuAtivo = false;
+    }
+    //fecah o jogo
+    if (IsKeyPressed(KEY_Q)){
+        CloseWindow();
+        exit(0);
+    }
+    if (IsKeyPressed(KEY_V)){
+        estado->menuAtivo = false;
+    }
+
+}
+//salva e carrega o arq binario do game
+void salvarJogo(EstadoJogo *estado){
+    FILE *arq = fopen("jogosalvo.bin","wb");
+    if (!arq){
+        printf("Erro ao salvar o jogo!\n");
+        return;
+    }
+    fwrite(estado,sizeof(EstadoJogo),1,arq);
+    fclose(arq);
+    printf("Jogo salvo com sucesso!\n");
+}
+void carregarJogo(EstadoJogo *estado) {
+    FILE *arq = fopen("jogosalvo.bin","rb");
+    if (!arq) {
+        printf("Nenhum jogo salvo encontrado!\n");
+        return;
+    }
+    fread(estado,sizeof(EstadoJogo),1,arq);
+    fclose(arq);
+    printf("Jogo carregado com sucesso!\n");
+}
+
+void lerMapa(    char *caminhoArquivo,    char mapaChar[NUM_LINHAS][NUM_COLUNAS], Jogador *voce, Jogador *inimigo)
 {
     FILE *arquivo = fopen(caminhoArquivo, "r");
 
-    if (!arquivo) 
+    if (!arquivo)
     {
         printf("Erro ao abrir arquivo do mapa!\n");
         return;
@@ -18,11 +81,11 @@ void lerMapa
 
     char linhaDeTexto[100];
 
-    for (int linha = 0; linha < NUM_LINHAS; linha++) 
+    for (int linha = 0; linha < NUM_LINHAS; linha++)
     {
         fgets(linhaDeTexto, sizeof(linhaDeTexto), arquivo);
 
-        for (int coluna = 0; coluna < NUM_COLUNAS; coluna++) 
+        for (int coluna = 0; coluna < NUM_COLUNAS; coluna++)
         {
             char c = linhaDeTexto[coluna];
 
@@ -33,7 +96,6 @@ void lerMapa
                 voce->celula.posicaoFutura.x = voce->celula.retangulo.x;
                 voce->celula.posicaoFutura.y = voce->celula.retangulo.y;
             }
-
             if (c == 'i')
             {
                 inimigo->celula.retangulo.x = coluna;
@@ -41,40 +103,27 @@ void lerMapa
                 inimigo->celula.posicaoFutura.x = inimigo->celula.retangulo.x;
                 inimigo->celula.posicaoFutura.y = inimigo->celula.retangulo.y;
             }
-
             mapaChar[linha][coluna] = c;
         }
     }
-
     fclose(arquivo);
 }
-
-void desenharMapa
-(
-    char mapaChar[NUM_LINHAS][NUM_COLUNAS], 
-    Celula mapaCel[NUM_LINHAS][NUM_COLUNAS]
-)
+void desenharMapa ( char mapaChar[NUM_LINHAS][NUM_COLUNAS],Celula mapaCel[NUM_LINHAS][NUM_COLUNAS])
 {
     for (int linha = 0; linha < NUM_LINHAS; linha++)
     {
         for (int coluna = 0; coluna < NUM_COLUNAS; coluna++)
         {
             _desenharCelulaMapa(
-                linha, 
-                coluna, 
+                linha,
+                coluna,
                 mapaChar[linha][coluna],
-                mapaCel
-            );
+                mapaCel);
         }
     }
 }
 
-void _desenharCelulaMapa
-(
-    int linha, 
-    int coluna, 
-    char c,
-    Celula mapaCel[NUM_LINHAS][NUM_COLUNAS]
+void _desenharCelulaMapa(    int linha,    int coluna,    char c,    Celula mapaCel[NUM_LINHAS][NUM_COLUNAS]
 )
 {
     Celula celula;
@@ -82,9 +131,7 @@ void _desenharCelulaMapa
     celula.retangulo.y = linha;
     celula.retangulo.width = 1;
     celula.retangulo.height = 1;
-
     Color cor;
-
     switch (c)
     {
         case 'p':
@@ -116,7 +163,14 @@ void desenharRodape(float largura, float altura)
     celula.angulo = 0;
     celula.cor = YELLOW;
 
+
     desenharCelula(celula);
+}
+
+void desenharInformacoes(Jogador *voce, Jogador *inimigo, EstadoJogo *estado)
+{
+    DrawText(TextFormat("Vida: %i", voce->vida), 10, 10, 20, BLACK);
+    DrawText(TextFormat("Volta: %i", voce->voltas), 10, 35, 20, BLACK);
 }
 
 void _obterCantosRetanguloRotacionado
@@ -142,7 +196,7 @@ void _obterCantosRetanguloRotacionado
     Vector2 baseEsquerda = {-metadeLargura - offsetX,  metadeAltura - offsetY};
 
     // relativos ao centro do retangulo
-    Vector2 cantosLocais[4] = 
+    Vector2 cantosLocais[4] =
     {
         topoEsquerda,
         topoDireita,
@@ -165,7 +219,7 @@ void _obterCantosRetanguloRotacionado
 
 void _obterAABBdosCantos
 (
-    const Vector2 cantos[4], 
+    const Vector2 cantos[4],
     Rectangle *aabb
 )
 {
@@ -181,13 +235,11 @@ void _obterAABBdosCantos
         if (cantos[i].y < minY) minY = cantos[i].y;
         if (cantos[i].y > maxY) maxY = cantos[i].y;
     }
-
     aabb->x = minX;
     aabb->y = minY;
     aabb->width = maxX - minX;
     aabb->height = maxY - minY;
 }
-
 void _projetarPoligono
 (
     const Vector2 cantos[4],
@@ -203,15 +255,12 @@ void _projetarPoligono
     for (int i = 0; i < 4; i++)
     {
         produtoEscalar = cantos[i].x * eixo.x + cantos[i].y * eixo.y;
-
         if (produtoEscalar < min) min = produtoEscalar;
         if (produtoEscalar > max) max = produtoEscalar;
     }
-
     *limiteMinimo = min;
     *limiteMaximo = max;
 }
-
 bool _intervalosSeSobrepoem
 (
     float minA,
@@ -222,35 +271,29 @@ bool _intervalosSeSobrepoem
 {
     return !(maxA < minB || maxB < minA);
 }
-
 bool _satRetRet(const Vector2 a[4], const Vector2 b[4])
 {
     Vector2 eixos[4];
-
     eixos[0] = (Vector2)
     {
         a[1].x - a[0].x,
         a[1].y - a[0].y
     };
-
     eixos[1] = (Vector2)
     {
         a[2].x - a[1].x,
         a[2].y - a[1].y
     };
-
     eixos[2] = (Vector2)
     {
         b[1].x - b[0].x,
         b[1].y - b[0].y
     };
-
     eixos[3] = (Vector2)
     {
         b[2].x - b[1].x,
         b[2].y - b[1].y
     };
-
     for (int i = 0; i < 4; i++)
     {
         Vector2 eixo = eixos[i];
@@ -258,20 +301,15 @@ bool _satRetRet(const Vector2 a[4], const Vector2 b[4])
 
         float magnitude = sqrt(pow(eixoProjetado.x, 2) + pow(eixoProjetado.y, 2));
         if (magnitude == 0) continue;
-
         eixoProjetado.x /= magnitude;
         eixoProjetado.y /= magnitude;
-
         float minA, maxA, minB, maxB;
         _projetarPoligono(a, eixoProjetado, &minA, &maxA);
         _projetarPoligono(b, eixoProjetado, &minB, &maxB);
-
         if (!_intervalosSeSobrepoem(minA, maxA, minB, maxB)) return false;
     }
-
     return true;
 }
-
 bool _ehParede(Celula celula)
 {
     Color corCelula = celula.cor;
@@ -291,9 +329,9 @@ bool temParede(
     jogadorRetangulo.y = jogador->celula.posicaoFutura.y;
 
     _obterCantosRetanguloRotacionado(
-        jogadorRetangulo, 
-        jogador->celula.anguloFuturo, 
-        jogador->celula.ancoraRotacao, 
+        jogadorRetangulo,
+        jogador->celula.anguloFuturo,
+        jogador->celula.ancoraRotacao,
         cantosJogador
     );
 
@@ -326,6 +364,24 @@ bool temParede(
             if (_satRetRet(cantosJogador, cantosCelula)) return true;
         }
     }
-
     return false;
+}
+
+
+
+void exibirVitoria(EstadoJogo *estado){
+    if (estado->venceu=true) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+        DrawText("Voce venceu!", 200,200,50,YELLOW);
+        EndDrawing();
+    }
+}
+void exibirGameOver(EstadoJogo *estado) {
+    if(estado->perdeu=true){
+    BeginDrawing();
+    ClearBackground(BLACK);
+    DrawText("Game Over!", 200,200,50,RED);
+    EndDrawing();
+    }
 }
