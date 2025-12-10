@@ -1,65 +1,73 @@
 // por favor comentar o que faz a movimentalcao e a colisao para que ue possa modificar na cunf caixas
 #include "janela.h"
 
-//funciona o menu
+
 void exibirMenu(EstadoJogo *estado, char *caminhoArquivo, char mapaChar[NUM_LINHAS][NUM_COLUNAS], Jogador *voce, Jogador *inimigo){
     BeginDrawing();
     ClearBackground(DARKGRAY);
 
     DrawText("Menu Principal",  100,50,40,WHITE);
-    DrawText("(N) Novo Jogo", 100,150,20,WHITE);
-    DrawText("(C) Carregar Jogo",  100,200,20,WHITE);
-    DrawText("(S) Salvar Jogo",  100,250,20,WHITE);
-    DrawText("(Q) Sair",  100,300,20,WHITE);
+    DrawText("(N) Novo Jogo", 100,100,20,WHITE);
+    DrawText("(C) Carregar Jogo",  100,150,20,WHITE);
+    DrawText("(S) Salvar Jogo",  100,200,20,WHITE);
+    DrawText("(Q) Sair",  100,250,20,WHITE);
+    DrawText("(V) Voltar ao Jogo",  100,300,20,WHITE);
+    DrawText("(Tab) Pausar",  100,350,20,WHITE);
 
     EndDrawing();
     //Reinicia tudo
     if (IsKeyPressed(KEY_N)){
-       estado->menuAtivo = false;
-       lerMapa(caminhoArquivo, mapaChar, voce, inimigo);
-        //venceu = false;
-       //perdeu = false;
+        estado->menuAtivo = false;
+        lerMapa(caminhoArquivo, mapaChar, voce, inimigo);
+        estado->voce.vida=100;
+        estado->inimigo.vida=100;
+        estado->voce.voltas=0;
+        estado->inimigo.voltas=0;
+        //estado->caixa.item=ITEM_NULO
+        estado->venceu = false;
+        estado->perdeu = false;
     }
-
+    //carrega o njogo
     if (IsKeyPressed(KEY_C)){
-        //carregarJogo();
+        carregarJogo(estado);
         estado->menuAtivo = false;
-        lerMapa(caminhoArquivo, mapaChar, voce, inimigo);
     }
-
+    //salva o jogo
     if (IsKeyPressed(KEY_S)){
+        salvarJogo(estado);
         estado->menuAtivo = false;
-        lerMapa(caminhoArquivo, mapaChar, voce, inimigo);
-       // salvarJogo();
     }
-
+    //fecah o jogo
     if (IsKeyPressed(KEY_Q)){
         CloseWindow();
         exit(0);
     }
+    if (IsKeyPressed(KEY_V)){
+        estado->menuAtivo = false;
+    }
+
 }
-/* quase terminando
+//salva e carrega o arq binario do game
 void salvarJogo(EstadoJogo *estado){
     FILE *arq = fopen("jogosalvo.bin","wb");
     if (!arq){
         printf("Erro ao salvar o jogo!\n");
         return;
     }
-    fwrite(aindaver,sizeof(),1,arq);
+    fwrite(estado,sizeof(EstadoJogo),1,arq);
     fclose(arq);
     printf("Jogo salvo com sucesso!\n");
 }
-
-void carregarJogo(EstadoJogo *estado,  char *caminhoArquivo) {
+void carregarJogo(EstadoJogo *estado) {
     FILE *arq = fopen("jogosalvo.bin","rb");
     if (!arq) {
         printf("Nenhum jogo salvo encontrado!\n");
         return;
     }
-    fread(aindaaver,sizeof(),1,arq);
+    fread(estado,sizeof(EstadoJogo),1,arq);
     fclose(arq);
     printf("Jogo carregado com sucesso!\n");
-}*/
+}
 
 void lerMapa(    char *caminhoArquivo,    char mapaChar[NUM_LINHAS][NUM_COLUNAS], Jogador *voce, Jogador *inimigo)
 {
@@ -157,6 +165,12 @@ void desenharRodape(float largura, float altura)
 
 
     desenharCelula(celula);
+}
+
+void desenharInformacoes(Jogador *voce, Jogador *inimigo, EstadoJogo *estado)
+{
+    DrawText(TextFormat("Vida: %i", voce->vida), 10, 10, 20, BLACK);
+    DrawText(TextFormat("Volta: %i", voce->voltas), 10, 35, 20, BLACK);
 }
 
 void _obterCantosRetanguloRotacionado
@@ -350,7 +364,24 @@ bool temParede(
             if (_satRetRet(cantosJogador, cantosCelula)) return true;
         }
     }
-
-
     return false;
+}
+
+
+
+void exibirVitoria(EstadoJogo *estado){
+    if (estado->venceu=true) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+        DrawText("Voce venceu!", 200,200,50,YELLOW);
+        EndDrawing();
+    }
+}
+void exibirGameOver(EstadoJogo *estado) {
+    if(estado->perdeu=true){
+    BeginDrawing();
+    ClearBackground(BLACK);
+    DrawText("Game Over!", 200,200,50,RED);
+    EndDrawing();
+    }
 }
