@@ -7,12 +7,19 @@
 #define NUM_COLUNAS 80
 
 typedef struct {
-bool menuAtivo;
-}EstadoJogo;
+    bool menuAtivo;
+    Jogador voce;
+    Jogador inimigo;
+    bool venceu;
+    bool perdeu;
+    //posicao inimigo
+    //posicao jogador
+    // posicao caixas
+}EstadoJogo; //salvar as info importantes
 
 void exibirMenu( EstadoJogo *estado, char *caminhoArquivo, char mapaChar[NUM_LINHAS][NUM_COLUNAS], Jogador *voce, Jogador *inimigo);
 void salvarJogo(EstadoJogo *estado);
-void carregarJogo(EstadoJogo *estado,  char *caminhoArquivo);
+void carregarJogo(EstadoJogo *estado);
 
 void lerMapa
 (
@@ -37,6 +44,7 @@ void _desenharCelulaMapa
 );
 
 void desenharRodape(float largura, float altura);
+void desenharInformacoes(Jogador *voce, Jogador *inimigo, EstadoJogo *estado);
 
 void _obterCantosRetanguloRotacionado
 (
@@ -75,5 +83,7 @@ bool temParede(
     Celula mapaCel[NUM_LINHAS][NUM_COLUNAS],
     Jogador *jogador
 );
+void exibirVitoria(EstadoJogo *estado);
+void exibirGameOver(EstadoJogo *estado);
 
 //0=void desenharCaixa()
