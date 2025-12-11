@@ -1,0 +1,41 @@
+# depslib dependency file v1.0
+1765442766 source:c:\raylib\jogo1\celula.c
+	"celula.h"
+
+1765442816 c:\raylib\jogo1\celula.h
+	<stdio.h>
+	<raylib.h>
+	<math.h>
+
+1765442978 source:c:\raylib\jogo1\janela.c
+	"janela.h"
+
+1765442766 c:\raylib\jogo1\janela.h
+	<stdlib.h>
+	"jogador.h"
+
+1765442978 c:\raylib\jogo1\jogador.h
+	"celula.h"
+
+1765443025 source:c:\raylib\jogo1\jogador.c
+	"jogador.h"
+
+1765442978 source:c:\raylib\jogo1\main.c
+	<string.h>
+	"inimigo.h"
+
+1765442766 source:c:\raylib\jogo1\inimigo.c
+	"inimigo.h"
+
+1765442408 source:c:\raylib\jogo1\caixa.c
+	"janela.h"
+	<stdlib.h>
+
+1765442408 c:\raylib\jogo1\caixa.h
+	<stdbool.h>
+	"jogador.h"
+
+1765442530 c:\raylib\jogo1\inimigo.h
+	"janela.h"
+	<raylib.h>
+
